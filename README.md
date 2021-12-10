@@ -4,6 +4,8 @@
 
 * As a member of the Advisory Services Team (AST) of a financial consultancy, one of the clients, a prominent investment bank, is interested in offering a new cryptocurrency investment portfolio for its customers. The company, however, is lost in the vast universe of cryptocurrencies. They’ve asked the AST to create a report that includes what cryptocurrencies are on the trading market and determine whether they can be grouped to create a classification system for this new investment.
 
+![Cryptocurrency](Images/cryptocurrency.jpg)
+
 * The client has provided raw data, so the first step is to process it to fit the machine learning models. Since there is no known classification system, unsupervised learning will need to be used. Several clustering algorithms will help to explore whether the cryptocurrencies can be grouped together with other similar cryptocurrencies. Data visualizations will be provided to the client to share the findings of AST.
 
 ## Instructions
