@@ -1,95 +1,44 @@
-# Unsupervised Machine Learning Challenge: Charity Funding Predictor
+# Cryptocurrency Clusters
 
 ## Background
 
-The non-profit foundation Alphabet Soup wants to create an algorithm to predict whether or not applicants for funding will be successful.  Use the features in the provided dataset to create a binary classifier based on machine learning and neural networks that is capable of predicting whether applicants will be successful if funded by Alphabet Soup.
+* As a member of the Advisory Services Team (AST) of a financial consultancy, one of the clients, a prominent investment bank, is interested in offering a new cryptocurrency investment portfolio for its customers. The company, however, is lost in the vast universe of cryptocurrencies. They’ve asked the AST to create a report that includes what cryptocurrencies are on the trading market and determine whether they can be grouped to create a classification system for this new investment.
 
-![alphabet_soup](Images/alphabet_soup.png)
-
-Alphabet Soup’s business team has provided a CSV containing more than 34,000 organizations that have received funding from Alphabet Soup over the years. Within this dataset are a number of columns that capture metadata about each organization, such as the following:
-
-* **EIN** and **NAME**—Identification columns
-* **APPLICATION_TYPE**—Alphabet Soup application type
-* **AFFILIATION**—Affiliated sector of industry
-* **CLASSIFICATION**—Government organization classification
-* **USE_CASE**—Use case for funding
-* **ORGANIZATION**—Organization type
-* **STATUS**—Active status
-* **INCOME_AMT**—Income classification
-* **SPECIAL_CONSIDERATIONS**—Special consideration for application
-* **ASK_AMT**—Funding amount requested
-* **IS_SUCCESSFUL**—Was the money used effectively
+* The client has provided raw data, so the first step is to process it to fit the machine learning models. Since there is no known classification system, unsupervised learning will need to be used. Several clustering algorithms will help to explore whether the cryptocurrencies can be grouped together with other similar cryptocurrencies. Data visualizations will be provided to the client to share the findings of AST.
 
 ## Instructions
 
-### Step 1: Preprocess the data
+### Data Preparation
 
-Use Pandas and the Scikit-Learn’s `StandardScaler()` to preprocess the dataset in order to compile, train, and evaluate the neural network model later in Step 2
+* Read `crypto_data.csv` into Pandas. The dataset was obtained from [CryptoCompare](https://min-api.cryptocompare.com/data/all/coinlist).
 
-Use the information provided in the starter code and follow the instructions to complete the preprocessing steps.
+* Discard all cryptocurrencies that are not being traded. In other words, filter for currencies that are currently being traded. Once this is done, drop the `IsTrading` column from the dataframe.
 
-1. Read in the charity_data.csv to a Pandas DataFrame, and be sure to identify the following:
-  * What variable(s) are considered the target(s) for the model?
-  * What variable(s) are considered the feature(s) for the model?
-2. Drop the `EIN` and `NAME` columns.
-3. Determine the number of unique values for each column.
-4. For those columns that have more than 10 unique values, determine the number of data points for each unique value.
-6. Use the number of data points for each unique value to pick a cutoff point to bin "rare" categorical variables together in a new value, `Other`, and then check if the binning was successful.
-7. Use `pd.get_dummies()` to encode categorical variables
+* Remove all rows that have at least one null value.
 
-### Step 2: Compile, Train, and Evaluate the Model
+* Filter for cryptocurrencies that have been mined. That is, the total coins mined should be greater than zero.
 
-Use TensorFlow to design a neural network or deep learning model.  Create a binary classification model that can predict if an Alphabet Soup–funded organization will be successful based on the features in the dataset. Think about how many inputs there are before determining the number of neurons and layers in the model. Then compile, train, and evaluate the binary classification model to calculate the model’s loss and accuracy.
+* In order for the dataset to be comprehensible to a machine learning algorithm, its data should be numeric. Since the coin names do not contribute to the analysis of the data, delete the `CoinName` from the original dataframe.
 
-1. Continue using the Jupyter notebook where the preprocessing steps from Step 1 were performed.
-2. Create a neural network model by assigning the number of input features and nodes for each layer using Tensorflow Keras.
-3. Create the first hidden layer and choose an appropriate activation function.
-4. If necessary, add a second hidden layer with an appropriate activation function.
-5. Create an output layer with an appropriate activation function.
-6. Check the structure of the model.
-7. Compile and train the model.
-8. Create a callback that saves the model's weights every 5 epochs.
-9. Evaluate the model using the test data to determine the loss and accuracy.
-10. Save and export the results to an HDF5 file, and name it `AlphabetSoupCharity.h5`.
+* The next step in data preparation is to convert the remaining features with text values, `Algorithm` and `ProofType`, into numerical data. To accomplish this task, use Pandas to create dummy variables. Examine the number of rows and columns of the dataset now. How did they change?
 
-### Step 3: Optimize the Model
+* Standardize the dataset so that columns that contain larger values do not unduly influence the outcome.
 
-Use TensorFlow to optimize the model in order to achieve a target predictive accuracy higher than 75%. If it can't achieve an accuracy higher than 75%, it will need to make at least three attempts to do so.
+### Dimensionality Reduction
 
-Optimize the model in order to achieve a target predictive accuracy higher than 75% by using any or all of the following:
+* Creating dummy variables above dramatically increased the number of features in the dataset. Perform dimensionality reduction with PCA. Rather than specify the number of principal components when the PCA model is instantiated, it is possible to state the desired **explained variance**. For example, say that a dataset has 100 features. Using `PCA(n_components=0.99)` creates a model that will preserve approximately 99% of the explained variance, whether that means reducing the dataset to 80 principal components or 3. For this project, preserve 90% of the explained variance in dimensionality reduction. How did the number of the features change?
 
-* Adjusting the input data to ensure that there are no variables or outliers that are causing confusion in the model, such as:
-  * Dropping more or fewer columns.
-  * Creating more bins for rare occurrences in columns.
-  * Increasing or decreasing the number of values for each bin.
-* Adding more neurons to a hidden layer.
-* Adding more hidden layers.
-* Using different activation functions for the hidden layers.
-* Adding or reducing the number of epochs to the training regimen.
+* Next, further reduce the dataset dimensions with t-SNE and visually inspect the results. In order to accomplish this task, run t-SNE on the principal components: the output of the PCA transformation. Then create a scatter plot of the t-SNE output. Observe whether there are distinct clusters or not.
 
-1. Create a new Jupyter Notebook file and name it `AlphabetSoupCharity_Optimzation.ipynb`.
-2. Import the dependencies, and read in the `charity_data.csv` to a Pandas DataFrame.
-3. Preprocess the dataset like in Step 1, taking into account any modifications to optimize the model.
-4. Design a neural network model, taking into account any modifications that will optimize the model to achieve higher than 75% accuracy.
-5. Save and export your results to an HDF5 file, and name it `AlphabetSoupCharity_Optimization.h5`.
+### Cluster Analysis with k-Means
 
-### Step 4: Write a Report on the Neural Network Model
+* Create an elbow plot to identify the best number of clusters. Use a for-loop to determine the inertia for each `k` between 1 through 10. Determine, if possible, where the elbow of the plot is, and at which value of `k` it appears.
 
-For this part of the Challenge, write a report on the performance of the deep learning model created for AlphabetSoup.
+### Recommendation
 
-The report should contain the following:
+* Based on the findings, make a brief (1-2 sentences) recommendation to the clients. Can the cryptocurrencies be clustered together? If so, into how many clusters? 
 
-1. **Overview** of the analysis: Explain the purpose of this analysis.
 
-2. **Results**: Using bulleted lists and images for answer support, address the following questions.
+## References
 
-  * Data Preprocessing
-    * What variable(s) are considered the target(s) for the model?
-    * What variable(s) are considered to be the features for the model?
-    * What variable(s) are neither targets nor features, and should be removed from the input data?
-  * Compiling, Training, and Evaluating the Model
-    * How many neurons, layers, and activation functions were selected for the neural network model, and why?
-    * Was the target model performance achieved?
-    * What steps were taken to try and increase model performance?
-
-3. **Summary**: Summarize the overall results of the deep learning model. Include a recommendation for how a different model could solve this classification problem, and explain the recommendation.
+Crypto Coin Comparison Ltd. (2020) Coin market capitalization lists of crypto currencies and prices. Retrieved from [https://www.cryptocompare.com/coins/list/all/USD/1](https://www.cryptocompare.com/coins/list/all/USD/1)
